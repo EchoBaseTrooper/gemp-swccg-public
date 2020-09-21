@@ -1,5 +1,6 @@
 package com.gempukku.swccgo.logic.timing.processes.turn;
 
+import com.gempukku.swccgo.communication.InGameStatisticsListener;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.actions.SystemQueueAction;
@@ -19,7 +20,11 @@ public class StartOfTurnGameProcess implements GameProcess {
     public void process(SwccgGame game) {
         final GameState gameState = game.getGameState();
         gameState.sendMessage("Start of " + gameState.getCurrentPlayerId() + "'s turn #" + gameState.getPlayersLatestTurnNumber(gameState.getCurrentPlayerId()));
-
+        
+        for(InGameStatisticsListener inGameStatisticsListener:game.getAllInGameStatisticsListeners()) {
+        	inGameStatisticsListener.writePileCounts(gameState,false);
+        }
+        
         SystemQueueAction action = new SystemQueueAction();
         // Trigger effect result for "Start of turn"
         action.appendEffect(
@@ -38,6 +43,11 @@ public class StartOfTurnGameProcess implements GameProcess {
 
                         gameState.setPlayersTotalForceGeneration(opponent, modifiersQuerying.getTotalForceGeneration(gameState, opponent));
                         gameState.sendMessage(opponent + "'s Force generation for this turn is " + GuiUtils.formatAsString(gameState.getPlayersTotalForceGeneration(opponent)));
+
+                        for(InGameStatisticsListener inGameStatisticsListener:game.getAllInGameStatisticsListeners()) {
+                        	inGameStatisticsListener.writeActivationTotals(gameState);
+                        }
+
                     }
                 });
         game.getActionsEnvironment().addActionToStack(action);
