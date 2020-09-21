@@ -33,6 +33,7 @@ public class ServerBuilder {
                 new GameRecorder(
                         extract(objectMap, GameHistoryService.class)));
 
+
         objectMap.put(CollectionsManager.class,
                 new CollectionsManager(
                         extract(objectMap, PlayerDAO.class),
@@ -82,7 +83,8 @@ public class ServerBuilder {
                         extract(objectMap, DeckDAO.class),
                         extract(objectMap, SwccgCardBlueprintLibrary.class),
                         extract(objectMap, ChatServer.class),
-                        extract(objectMap, GameRecorder.class)));
+                        extract(objectMap, GameRecorder.class),
+                        extract(objectMap, InGameStatisticsDAO.class)));
 
         objectMap.put(HallServer.class,
                 new HallServer(
