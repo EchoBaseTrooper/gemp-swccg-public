@@ -4,6 +4,7 @@ import com.gempukku.swccgo.common.GameEndReason;
 import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.communication.GameStateListener;
+import com.gempukku.swccgo.communication.InGameStatisticsListener;
 import com.gempukku.swccgo.communication.UserFeedback;
 import com.gempukku.swccgo.game.*;
 import com.gempukku.swccgo.game.layout.LocationsLayout;
@@ -45,6 +46,7 @@ public class DefaultSwccgGame implements SwccgGame {
     private Map<String, Set<Phase>> _autoPassConfiguration = new HashMap<String, Set<Phase>>();
     private Set<GameStateListener> _gameStateListeners = new HashSet<GameStateListener>();
     private Set<GameResultListener> _gameResultListeners = new HashSet<GameResultListener>();
+    private Set<InGameStatisticsListener> _inGameStatisticsListeners = new HashSet<InGameStatisticsListener>();
 
     private int _nextShapshotId;
     private GameSnapshot _snapshotToRestore;
@@ -192,6 +194,10 @@ public class DefaultSwccgGame implements SwccgGame {
             for (GameResultListener gameResultListener : _gameResultListeners)
                 gameResultListener.gameCancelled();
 
+            for(InGameStatisticsListener gameStatisticsListener: _inGameStatisticsListeners) {
+            	gameStatisticsListener.writePileCounts(_gameState,true);
+            }
+            
             _finished = true;
         }
     }
@@ -215,6 +221,10 @@ public class DefaultSwccgGame implements SwccgGame {
             for (GameResultListener gameResultListener : _gameResultListeners)
                 gameResultListener.gameCancelled();
 
+            for(InGameStatisticsListener gameStatisticsListener: _inGameStatisticsListeners) {
+            	gameStatisticsListener.writePileCounts(_gameState,true);
+            }
+            
             _finished = true;
         }
     }
@@ -236,6 +246,10 @@ public class DefaultSwccgGame implements SwccgGame {
         for (GameResultListener gameResultListener : _gameResultListeners)
             gameResultListener.gameFinished(_winnerPlayerId, reason, _losers, winnerSide, loserSide);
 
+        for(InGameStatisticsListener gameStatisticsListener: _inGameStatisticsListeners) {
+        	gameStatisticsListener.writePileCounts(_gameState,true);
+        }
+        
         _finished = true;
     }
 
@@ -466,4 +480,20 @@ public class DefaultSwccgGame implements SwccgGame {
             iterator.remove();
         }
     }
+
+	@Override
+	public void addInGameStatisticsListener(InGameStatisticsListener listener) {
+		_inGameStatisticsListeners.add(listener);
+	}
+
+	@Override
+	public void removeInGameStatisticsListener(InGameStatisticsListener listener) {
+		// TODO Auto-generated method stub
+		_inGameStatisticsListeners.remove(listener);
+	}
+
+	@Override
+	public Collection<InGameStatisticsListener> getAllInGameStatisticsListeners() {
+		return Collections.unmodifiableSet(_inGameStatisticsListeners);
+	}
 }
