@@ -4,6 +4,7 @@ import com.gempukku.swccgo.common.GameEndReason;
 import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.communication.GameStateListener;
+import com.gempukku.swccgo.communication.InGameStatisticsListener;
 import com.gempukku.swccgo.communication.UserFeedback;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.modifiers.ModifiersEnvironment;
@@ -254,4 +255,22 @@ public interface SwccgGame {
      * @param description the description
      */
     void takeSnapshot(String description);
+    
+    /**
+     * Adds a game statistics listener
+     * @param listener the game statistics listener
+     */
+    void addInGameStatisticsListener(InGameStatisticsListener listener);
+    
+    /**
+     * Removes a game statistics listener
+     * @param listener the game statistics listener
+     */
+    void removeInGameStatisticsListener(InGameStatisticsListener listener);
+    
+    /**
+     * Gets all game statistics listeners
+     */
+    Collection<InGameStatisticsListener> getAllInGameStatisticsListeners();
+
 }
