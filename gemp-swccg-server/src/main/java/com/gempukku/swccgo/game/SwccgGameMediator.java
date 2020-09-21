@@ -1306,4 +1306,12 @@ public class SwccgGameMediator {
 
         return "Other";
     }
+
+	public void addInGameStatisticsListener(GameStatisticsProcessor gameStatisticsProcessor) {
+		_swccgoGame.addInGameStatisticsListener(gameStatisticsProcessor);
+	}
+	
+	public void removeInGameStatisticsListener(GameStatisticsProcessor gameStatisticsProcessor) {
+		_swccgoGame.removeInGameStatisticsListener(gameStatisticsProcessor);
+	}
 }
