@@ -26,7 +26,8 @@ public class DaoBuilder {
         objectMap.put(TournamentDAO.class, new DbTournamentDAO(dbAccess));
         objectMap.put(TournamentPlayerDAO.class, new DbTournamentPlayerDAO(dbAccess));
         objectMap.put(TournamentMatchDAO.class, new DbTournamentMatchDAO(dbAccess));
-
+        objectMap.put(InGameStatisticsDAO.class, new DbInGameStatisticsDAO(dbAccess));
+        
         DbMerchantDAO dbMerchantDao = new DbMerchantDAO(dbAccess);
         CachedMerchantDAO merchantDao = new CachedMerchantDAO(dbMerchantDao);
         objectMap.put(MerchantDAO.class, merchantDao);
