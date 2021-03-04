@@ -103,7 +103,7 @@ public class SwccgoServer extends AbstractServer {
 
             int maxPlayerTime = timePerPlayerMinutes * 60;
             SwccgGameMediator swccgGameMediator = new SwccgGameMediator(gameId, swccgFormat, participants, _swccgCardBlueprintLibrary,
-                        maxPlayerTime, allowSpectators, cancelIfNoActions, allowCancelling, allowExtendGameTimer, decisionTimeoutSeconds, isPrivate);
+                        maxPlayerTime, allowSpectators, cancelIfNoActions, allowCancelling, allowExtendGameTimer, decisionTimeoutSeconds, isPrivate, (tournamentName==null||tournamentName.equals("Casual")));
 
 
             swccgGameMediator.addGameResultListener(

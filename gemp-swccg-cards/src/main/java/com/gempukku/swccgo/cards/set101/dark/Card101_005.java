@@ -2,6 +2,7 @@ package com.gempukku.swccgo.cards.set101.dark;
 
 import com.gempukku.swccgo.cards.AbstractImperial;
 import com.gempukku.swccgo.cards.GameConditions;
+import com.gempukku.swccgo.cards.conditions.AloneCondition;
 import com.gempukku.swccgo.cards.conditions.OnTableCondition;
 import com.gempukku.swccgo.common.*;
 import com.gempukku.swccgo.filters.Filter;
@@ -11,10 +12,12 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
+import com.gempukku.swccgo.logic.conditions.AndCondition;
+import com.gempukku.swccgo.logic.conditions.Condition;
+import com.gempukku.swccgo.logic.conditions.NotCondition;
 import com.gempukku.swccgo.logic.effects.DrawDestinyEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardToLoseFromTableEffect;
-import com.gempukku.swccgo.logic.modifiers.MayNotDeployModifier;
-import com.gempukku.swccgo.logic.modifiers.Modifier;
+import com.gempukku.swccgo.logic.modifiers.*;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.GuiUtils;
 
@@ -38,13 +41,36 @@ public class Card101_005 extends AbstractImperial {
 
     @Override
     protected Filter getGameTextValidDeployTargetFilter(SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
+        if (game.isCasual())
+            return Filters.any;
         return Filters.Deploys_on_Death_Star;
     }
 
     @Override
-    protected List<Modifier> getGameTextAlwaysOnModifiers(SwccgGame game, PhysicalCard self) {
+    protected List<Modifier> getGameTextAlwaysOnModifiers(final SwccgGame game, PhysicalCard self) {
+        Condition isCasualCondition = new Condition() {
+            @Override
+            public boolean isFulfilled(GameState gameState, ModifiersQuerying modifiersQuerying) {
+                return game.isCasual();
+            }
+        };
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new MayNotDeployModifier(self, new OnTableCondition(self, 2, Filters.and(Filters.opponents(self), Filters.unique, Filters.character))));
+        modifiers.add(new MayNotDeployModifier(self, new AndCondition(new NotCondition(isCasualCondition), new OnTableCondition(self, 2, Filters.and(Filters.opponents(self), Filters.unique, Filters.character)))));
+        modifiers.add(new PowerModifier(self, isCasualCondition, 3));
+        modifiers.add(new DestinyModifier(self, self, isCasualCondition, 8));
+        return modifiers;
+    }
+
+    @Override
+    protected List<Modifier> getGameTextWhileActiveInPlayModifiers(final SwccgGame game, final PhysicalCard self) {
+        Condition isCasualCondition = new Condition() {
+            @Override
+            public boolean isFulfilled(GameState gameState, ModifiersQuerying modifiersQuerying) {
+                return game.isCasual();
+            }
+        };
+        List<Modifier> modifiers = new LinkedList<Modifier>();
+        modifiers.add(new ImmuneToAttritionModifier(self, isCasualCondition));
         return modifiers;
     }
 
@@ -54,7 +80,8 @@ public class Card101_005 extends AbstractImperial {
 
         // Check condition(s)
         if (TriggerConditions.lostBattle(game, effectResult, playerId)
-                && GameConditions.isInBattle(game, self)) {
+                && GameConditions.isInBattle(game, self)
+                && !game.isCasual()) {
 
             final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.setText("Draw destiny");

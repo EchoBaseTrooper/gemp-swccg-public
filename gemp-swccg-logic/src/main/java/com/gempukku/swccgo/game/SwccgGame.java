@@ -256,4 +256,6 @@ public interface SwccgGame {
     void takeSnapshot(String description);
 
     String getDeckString(Side side);
+
+    boolean isCasual();
 }
